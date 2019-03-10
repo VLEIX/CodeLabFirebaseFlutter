@@ -8,6 +8,6 @@ Project to implement modules from firebase using flutter
 ## Getting Started
 - [Firebase Documentation](https://firebase.google.com)
 
-## Examples
+## Examples Implemented
 - [Firebase Cloud Firestone](https://codelabs.developers.google.com/codelabs/flutter-firebase/index.html?index=..%2F..index)
 - [Firebase Authentication](https://youtu.be/u_Lyx8KJWpg)
