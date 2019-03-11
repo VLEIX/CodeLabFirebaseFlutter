@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'cloud_firestone/survey_baby_name_page.dart';
+import 'authentication/auth_provider.dart';
+import 'authentication/auth.dart';
+import 'authentication/root_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -28,10 +31,19 @@ class MyApp extends StatelessWidget {
                   case 0:
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => SurveyBabyNamePage()),
+                      MaterialPageRoute(
+                          builder: (context) => SurveyBabyNamePage()),
                     );
                     break;
                   case 1:
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AuthProvider(
+                                auth: Auth(),
+                                child: RootPage(),
+                              )),
+                    );
                     break;
                   case 2:
                     break;
