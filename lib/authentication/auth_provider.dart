@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'auth.dart';
 
 class AuthProvider extends InheritedWidget {
-  const AuthProvider({Key key, Widget child, this.auth}) : super(key: key, child: child);
   final BaseAuth auth;
+
+  const AuthProvider({Key key, Widget child, this.auth}) : super(key: key, child: child);
 
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) => true;

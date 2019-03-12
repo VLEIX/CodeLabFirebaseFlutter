@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'auth.dart';
 import 'auth_provider.dart';
+import 'login_page.dart';
 
 enum AuthUserStatus {
   notDetermined,
@@ -36,13 +37,24 @@ class _RootPageState extends State<RootPage> {
       case AuthUserStatus.notDetermined:
         return _buildWaitingScreen();
       case AuthUserStatus.notSignedIn:
-        print('notSignedIn');
-        break;
+        return LoginPage(
+          onSignedIn: _signedIn,
+        );
       case AuthUserStatus.signedIn:
         print('signedIn');
         break;
     }
     return null;
+  }
+
+  // Private Widgets
+  Widget _buildWaitingScreen() {
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      ),
+    );
   }
 
   // Private Methods
@@ -56,15 +68,5 @@ class _RootPageState extends State<RootPage> {
     setState(() {
       authUserStatus = AuthUserStatus.notSignedIn;
     });
-  }
-
-  // Private Widgets
-  Widget _buildWaitingScreen() {
-    return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
-      ),
-    );
   }
 }
