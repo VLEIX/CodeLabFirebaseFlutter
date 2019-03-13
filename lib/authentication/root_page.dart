@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'auth.dart';
 import 'auth_provider.dart';
 import 'login_page.dart';
+import 'home_page.dart';
 
 enum AuthUserStatus {
   notDetermined,
@@ -41,8 +42,9 @@ class _RootPageState extends State<RootPage> {
           onSignedIn: _signedIn,
         );
       case AuthUserStatus.signedIn:
-        print('signedIn');
-        break;
+        return HomePage(
+          onSignedOut: _signedOut,
+        );
     }
     return null;
   }
