@@ -11,3 +11,7 @@ Project to implement modules from firebase using flutter
 ## Examples Implemented
 - [Firebase Cloud Firestone](https://codelabs.developers.google.com/codelabs/flutter-firebase/index.html?index=..%2F..index)
 - [Firebase Authentication](https://youtu.be/u_Lyx8KJWpg)
+- [Firebase Authentication - Facebook](https://youtu.be/XxZLHP0fGwk)
+- [Facebook Developers](https://developers.facebook.com)
+
+
