@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'auth.dart';
 import 'auth_provider.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 enum FormType {
   login,
@@ -35,6 +36,15 @@ class _LoginPageState extends State<LoginPage> {
   String _password;
   FormType _formType = FormType.login;
 
+  FacebookLogin _facebookLogin;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _facebookLogin = FacebookLogin();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,6 +60,7 @@ class _LoginPageState extends State<LoginPage> {
               children: _buildInputs() + _buildSubmitButtons(),
             )),
       ),
+      resizeToAvoidBottomPadding: false,
     );
   }
 
@@ -75,20 +86,68 @@ class _LoginPageState extends State<LoginPage> {
     if (_formType == FormType.login) {
       return <Widget>[
         RaisedButton(
-          key: Key('signIn'),
+          key: Key('logIn'),
           child: Text(
             'Login',
             style: TextStyle(
-              fontSize: 20.0,
+              fontSize: 18.0,
             ),
           ),
+          onPressed: _validateAndSubmit,
+        ),
+        RaisedButton(
+          key: Key('logInFacebook'),
+          child: Text(
+            'Login with Facebook',
+            style: TextStyle(
+              fontSize: 18.0,
+            ),
+          ),
+          color: Color(0XFF4566BE),
+          textColor: Colors.white,
+          onPressed: _loginWithFacebook,
+        ),
+        RaisedButton(
+          key: Key('logInGoogle'),
+          child: Text(
+            'Login with Google',
+            style: TextStyle(
+              fontSize: 18.0,
+            ),
+          ),
+          color: Color(0XFFBF4D3B),
+          textColor: Colors.white,
+          onPressed: _validateAndSubmit,
+        ),
+        RaisedButton(
+          key: Key('logInTwitter'),
+          child: Text(
+            'Login with Twitter',
+            style: TextStyle(
+              fontSize: 18.0,
+            ),
+          ),
+          color: Color(0XFF6DA9EE),
+          textColor: Colors.white,
+          onPressed: _validateAndSubmit,
+        ),
+        RaisedButton(
+          key: Key('logInGithub'),
+          child: Text(
+            'Login with Github',
+            style: TextStyle(
+              fontSize: 18.0,
+            ),
+          ),
+          color: Color(0XFFFFFFFF),
+          textColor: Colors.black,
           onPressed: _validateAndSubmit,
         ),
         FlatButton(
           child: Text(
             'Create an account',
             style: TextStyle(
-              fontSize: 20.0,
+              fontSize: 16.0,
             ),
           ),
           onPressed: moveToRegister,
@@ -100,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Text(
             'Create an account',
             style: TextStyle(
-              fontSize: 20.0,
+              fontSize: 18.0,
             ),
           ),
           onPressed: _validateAndSubmit,
@@ -109,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Text(
             'Have an account? Login',
             style: TextStyle(
-              fontSize: 20.0,
+              fontSize: 16.0,
             ),
           ),
           onPressed: moveToLogin,
@@ -131,8 +190,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _validateAndSubmit() async {
     if (validateAndSave()) {
+      final BaseAuth auth = AuthProvider.of(context).auth;
       try {
-        final BaseAuth auth = AuthProvider.of(context).auth;
         if (_formType == FormType.login) {
           final String userId = await auth.signInWithEmailAndPassword(
             _email,
@@ -151,6 +210,28 @@ class _LoginPageState extends State<LoginPage> {
         print('Error: $e');
       }
     }
+  }
+
+  Future<void> _loginWithFacebook() async {
+    _facebookLogin.logInWithReadPermissions(['email', 'public_profile']).then(
+        (result) async {
+      final BaseAuth auth = AuthProvider.of(context).auth;
+
+      switch (result.status) {
+        case FacebookLoginStatus.loggedIn:
+          final String userId = await auth.signInWithCredential(
+            authProviderType: AuthProviderType.facebook,
+            token: result.accessToken.token,
+          );
+          print('Signed in with Facebook: $userId');
+          break;
+        default:
+          break;
+      }
+      widget.onSignedIn(); // callback to launch the new screen
+    }).catchError((e) {
+      print(e);
+    });
   }
 
   void moveToRegister() {

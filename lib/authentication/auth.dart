@@ -1,9 +1,17 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 
+enum AuthProviderType {
+  facebook,
+  google,
+  twitter,
+  github,
+}
+
 abstract class BaseAuth {
   Future<String> signInWithEmailAndPassword(String email, String password);
   Future<String> createUserWithEmailAndPassword(String email, String password);
+  Future<String> signInWithCredential({AuthProviderType authProviderType, String token});
   Future<String> currentUser();
   Future<void> signOut();
 }
@@ -14,6 +22,29 @@ class Auth implements BaseAuth {
   @override
   Future<String> signInWithEmailAndPassword(String email, String password) async {
     final FirebaseUser user = await _firebaseAuth.signInWithEmailAndPassword(email: email, password: password);
+    return user?.uid;
+  }
+
+  @override
+  Future<String> signInWithCredential({AuthProviderType authProviderType, String token}) async {
+    AuthCredential authCredential;
+
+    switch(authProviderType) {
+      case AuthProviderType.facebook:
+        authCredential = FacebookAuthProvider.getCredential(accessToken: token);
+        break;
+      case AuthProviderType.google:
+//        authCredential = GoogleAuthProvider.getCredential(idToken: null, accessToken: null)
+        break;
+      case AuthProviderType.twitter:
+//        authCredential = TwitterAuthProvider.getCredential(authToken: null, authTokenSecret: null)
+        break;
+      case AuthProviderType.github:
+        authCredential = GithubAuthProvider.getCredential(token: token);
+        break;
+    }
+
+    final FirebaseUser user = await _firebaseAuth.signInWithCredential(authCredential);
     return user?.uid;
   }
 
