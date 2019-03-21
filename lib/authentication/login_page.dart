@@ -82,67 +82,39 @@ class _LoginPageState extends State<LoginPage> {
     ];
   }
 
+  Widget _raisedButton({@required Key key, @required String title, @required VoidCallback onPressed, Color color, Color textColor}) {
+    return RaisedButton(
+      key: key,
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 18.0,
+        ),
+      ),
+      color: color,
+      textColor: textColor,
+      onPressed: onPressed,
+    );
+  }
+
   List<Widget> _buildSubmitButtons() {
     if (_formType == FormType.login) {
       return <Widget>[
-        RaisedButton(
-          key: Key('logIn'),
-          child: Text(
-            'Login',
-            style: TextStyle(
-              fontSize: 18.0,
-            ),
-          ),
-          onPressed: _validateAndSubmit,
-        ),
-        RaisedButton(
-          key: Key('logInFacebook'),
-          child: Text(
-            'Login with Facebook',
-            style: TextStyle(
-              fontSize: 18.0,
-            ),
-          ),
-          color: Color(0XFF4566BE),
-          textColor: Colors.white,
-          onPressed: _loginWithFacebook,
-        ),
-        RaisedButton(
-          key: Key('logInGoogle'),
-          child: Text(
-            'Login with Google',
-            style: TextStyle(
-              fontSize: 18.0,
-            ),
-          ),
-          color: Color(0XFFBF4D3B),
-          textColor: Colors.white,
-          onPressed: _validateAndSubmit,
-        ),
-        RaisedButton(
-          key: Key('logInTwitter'),
-          child: Text(
-            'Login with Twitter',
-            style: TextStyle(
-              fontSize: 18.0,
-            ),
-          ),
-          color: Color(0XFF6DA9EE),
-          textColor: Colors.white,
-          onPressed: _validateAndSubmit,
-        ),
-        RaisedButton(
-          key: Key('logInGithub'),
-          child: Text(
-            'Login with Github',
-            style: TextStyle(
-              fontSize: 18.0,
-            ),
-          ),
-          color: Color(0XFFFFFFFF),
-          textColor: Colors.black,
-          onPressed: _validateAndSubmit,
-        ),
+        _raisedButton(key: Key('logIn'), title: 'Login', onPressed: () {
+          _validateAndSubmit();
+        }),
+        _raisedButton(key: Key('logInFacebook'), title: 'Login with Facebook', color: Color(0XFF4566BE), textColor: Colors.white, onPressed: () {
+          _loginWithFacebook();
+        }),
+        _raisedButton(key: Key('logInGoogle'), title: 'Login with Google', color: Color(0XFFBF4D3B), textColor: Colors.white, onPressed: () {
+          _validateAndSubmit();
+        }),
+        _raisedButton(key: Key('logInTwitter'), title: 'Login with Twitter', color: Color(0XFF6DA9EE), textColor: Colors.white, onPressed: () {
+          _validateAndSubmit();
+        }),
+        _raisedButton(key: Key('logInGithub'), title: 'Login with Github', color: Colors.white, textColor: Colors.black, onPressed: () {
+          _validateAndSubmit();
+        }),
         FlatButton(
           child: Text(
             'Create an account',
@@ -150,20 +122,15 @@ class _LoginPageState extends State<LoginPage> {
               fontSize: 16.0,
             ),
           ),
-          onPressed: moveToRegister,
+          onPressed: _moveToRegister,
         ),
       ];
     } else {
       return <Widget>[
-        RaisedButton(
-          child: Text(
-            'Create an account',
-            style: TextStyle(
-              fontSize: 18.0,
-            ),
-          ),
-          onPressed: _validateAndSubmit,
-        ),
+        _raisedButton(key: Key('createAccount'), title: 'Create an account', onPressed: () {
+          _validateAndSubmit();
+        }),
+
         FlatButton(
           child: Text(
             'Have an account? Login',
@@ -171,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
               fontSize: 16.0,
             ),
           ),
-          onPressed: moveToLogin,
+          onPressed: _moveToLogin,
         ),
       ];
     }
@@ -205,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
           );
           print('Registered user: $userId');
         }
-        widget.onSignedIn(); // callback to launch the new screen
+        _onSignedIn();
       } catch (e) {
         print('Error: $e');
       }
@@ -219,22 +186,27 @@ class _LoginPageState extends State<LoginPage> {
 
       switch (result.status) {
         case FacebookLoginStatus.loggedIn:
+          print('logInWithReadPermissions - loggedIn');
           final String userId = await auth.signInWithCredential(
             authProviderType: AuthProviderType.facebook,
             token: result.accessToken.token,
           );
+          _onSignedIn();
           print('Signed in with Facebook: $userId');
           break;
-        default:
+        case FacebookLoginStatus.cancelledByUser:
+          print('logInWithReadPermissions - cancelledByUser');
+          break;
+        case FacebookLoginStatus.error:
+          print('logInWithReadPermissions - error');
           break;
       }
-      widget.onSignedIn(); // callback to launch the new screen
     }).catchError((e) {
       print(e);
     });
   }
 
-  void moveToRegister() {
+  void _moveToRegister() {
     _formKey.currentState.reset();
 
     setState(() {
@@ -242,11 +214,15 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  void moveToLogin() {
+  void _moveToLogin() {
     _formKey.currentState.reset();
 
     setState(() {
       _formType = FormType.login;
     });
+  }
+
+  void _onSignedIn() {
+    widget.onSignedIn(); // callback to launch the new screen
   }
 }
