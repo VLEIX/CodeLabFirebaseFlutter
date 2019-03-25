@@ -11,7 +11,7 @@ enum AuthProviderType {
 abstract class BaseAuth {
   Future<String> signInWithEmailAndPassword(String email, String password);
   Future<String> createUserWithEmailAndPassword(String email, String password);
-  Future<String> signInWithCredential({AuthProviderType authProviderType, String token});
+  Future<String> signInWithCredential({AuthProviderType authProviderType, String idToken, String accessToken});
   Future<String> currentUser();
   Future<void> signOut();
 }
@@ -26,21 +26,21 @@ class Auth implements BaseAuth {
   }
 
   @override
-  Future<String> signInWithCredential({AuthProviderType authProviderType, String token}) async {
+  Future<String> signInWithCredential({AuthProviderType authProviderType, String idToken, String accessToken}) async {
     AuthCredential authCredential;
 
     switch(authProviderType) {
       case AuthProviderType.facebook:
-        authCredential = FacebookAuthProvider.getCredential(accessToken: token);
+        authCredential = FacebookAuthProvider.getCredential(accessToken: accessToken);
         break;
       case AuthProviderType.google:
-//        authCredential = GoogleAuthProvider.getCredential(idToken: null, accessToken: null)
+        authCredential = GoogleAuthProvider.getCredential(idToken: idToken, accessToken: accessToken);
         break;
       case AuthProviderType.twitter:
 //        authCredential = TwitterAuthProvider.getCredential(authToken: null, authTokenSecret: null)
         break;
       case AuthProviderType.github:
-        authCredential = GithubAuthProvider.getCredential(token: token);
+        authCredential = GithubAuthProvider.getCredential(token: accessToken);
         break;
     }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'auth.dart';
 import 'auth_provider.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 enum FormType {
   login,
@@ -37,12 +38,14 @@ class _LoginPageState extends State<LoginPage> {
   FormType _formType = FormType.login;
 
   FacebookLogin _facebookLogin;
+  GoogleSignIn _googleSignIn;
 
   @override
   void initState() {
     super.initState();
 
     _facebookLogin = FacebookLogin();
+    _googleSignIn = GoogleSignIn();
   }
 
   @override
@@ -97,6 +100,19 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _flatButton({@required Key key, @required String title, @required VoidCallback onPressed}) {
+    return FlatButton(
+      key: key,
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16.0,
+        ),
+      ),
+      onPressed: onPressed,
+    );
+  }
+
   List<Widget> _buildSubmitButtons() {
     if (_formType == FormType.login) {
       return <Widget>[
@@ -107,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
           _loginWithFacebook();
         }),
         _raisedButton(key: Key('logInGoogle'), title: 'Login with Google', color: Color(0XFFBF4D3B), textColor: Colors.white, onPressed: () {
-          _validateAndSubmit();
+          _loginWithGoogle();
         }),
         _raisedButton(key: Key('logInTwitter'), title: 'Login with Twitter', color: Color(0XFF6DA9EE), textColor: Colors.white, onPressed: () {
           _validateAndSubmit();
@@ -115,31 +131,18 @@ class _LoginPageState extends State<LoginPage> {
         _raisedButton(key: Key('logInGithub'), title: 'Login with Github', color: Colors.white, textColor: Colors.black, onPressed: () {
           _validateAndSubmit();
         }),
-        FlatButton(
-          child: Text(
-            'Create an account',
-            style: TextStyle(
-              fontSize: 16.0,
-            ),
-          ),
-          onPressed: _moveToRegister,
-        ),
+        _flatButton(key: Key('signUp'), title: 'Create an account', onPressed: () {
+          _moveToRegister();
+        }),
       ];
     } else {
       return <Widget>[
         _raisedButton(key: Key('createAccount'), title: 'Create an account', onPressed: () {
           _validateAndSubmit();
         }),
-
-        FlatButton(
-          child: Text(
-            'Have an account? Login',
-            style: TextStyle(
-              fontSize: 16.0,
-            ),
-          ),
-          onPressed: _moveToLogin,
-        ),
+        _flatButton(key: Key('alreadyRegistered'), title: 'Have an account? Login', onPressed: () {
+          _moveToLogin();
+        }),
       ];
     }
   }
@@ -189,7 +192,7 @@ class _LoginPageState extends State<LoginPage> {
           print('logInWithReadPermissions - loggedIn');
           final String userId = await auth.signInWithCredential(
             authProviderType: AuthProviderType.facebook,
-            token: result.accessToken.token,
+            accessToken: result.accessToken.token,
           );
           _onSignedIn();
           print('Signed in with Facebook: $userId');
@@ -201,6 +204,26 @@ class _LoginPageState extends State<LoginPage> {
           print('logInWithReadPermissions - error');
           break;
       }
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  Future<void> _loginWithGoogle() async {
+    _googleSignIn.signIn().then((result) async {
+      result.authentication.then((googleKey) async {
+        final BaseAuth auth = AuthProvider.of(context).auth;
+
+        final String userId = await auth.signInWithCredential(
+          authProviderType: AuthProviderType.google,
+          idToken: googleKey.idToken,
+          accessToken: googleKey.accessToken,
+        );
+        _onSignedIn();
+        print('Signed in with Google: $userId');
+      }).catchError((e) {
+        print(e);
+      });
     }).catchError((e) {
       print(e);
     });

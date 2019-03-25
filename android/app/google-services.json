@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "337421750339-lok92bi9ko7420ecm6k7ti0lbsqshs6t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.frantun.codelabsfirebaseflutter",
+            "certificate_hash": "c86344a0dca002c6eb713e2e28f7d877ac91e15f"
+          }
+        },
+        {
           "client_id": "337421750339-ojvoh5kf39ts8o7n8b4a4qsbud5lvm45.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,20 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "337421750339-ojvoh5kf39ts8o7n8b4a4qsbud5lvm45.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "337421750339-kqdn4fm65858t32l8f51kas69frepd9c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.frantun.codelabsfirebaseflutter"
+              }
+            }
+          ]
         },
         "ads_service": {
           "status": 2

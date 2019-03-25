@@ -18,8 +18,36 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb2011518325822342</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.337421750339-kqdn4fm65858t32l8f51kas69frepd9c</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>FacebookAppID</key>
+	<string>2011518325822342</string>
+	<key>FacebookDisplayName</key>
+	<string>FirebaseFlutter</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -41,28 +69,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-
-    <key>CFBundleURLTypes</key>
-    <array>
-    <dict>
-    <key>CFBundleURLSchemes</key>
-    <array>
-    <string>fb2011518325822342</string>
-    </array>
-    </dict>
-    </array>
-    <key>FacebookAppID</key>
-    <string>2011518325822342</string>
-    <key>FacebookDisplayName</key>
-    <string>FirebaseFlutter</string>
-
-    <key>LSApplicationQueriesSchemes</key>
-    <array>
-    <string>fbapi</string>
-    <string>fb-messenger-share-api</string>
-    <string>fbauth2</string>
-    <string>fbshareextension</string>
-    </array>
-
 </dict>
 </plist>
