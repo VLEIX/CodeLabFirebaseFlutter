@@ -3,6 +3,7 @@ import 'auth.dart';
 import 'auth_provider.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_twitter_login/flutter_twitter_login.dart';
 
 enum FormType {
   login,
@@ -39,6 +40,7 @@ class _LoginPageState extends State<LoginPage> {
 
   FacebookLogin _facebookLogin;
   GoogleSignIn _googleSignIn;
+  TwitterLogin _twitterLogin;
 
   @override
   void initState() {
@@ -46,6 +48,7 @@ class _LoginPageState extends State<LoginPage> {
 
     _facebookLogin = FacebookLogin();
     _googleSignIn = GoogleSignIn();
+    _twitterLogin = TwitterLogin(consumerKey: 'yEOD8RE9uJvtcMRfvFtkYNtuE', consumerSecret: 'zn7FetFiDNv0lmA5gNd3mo4cwswsqDcPonT60tPA86nJTrfMDX');
   }
 
   @override
@@ -126,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
           _loginWithGoogle();
         }),
         _raisedButton(key: Key('logInTwitter'), title: 'Login with Twitter', color: Color(0XFF6DA9EE), textColor: Colors.white, onPressed: () {
-          _validateAndSubmit();
+          _loginWithTwitter();
         }),
         _raisedButton(key: Key('logInGithub'), title: 'Login with Github', color: Colors.white, textColor: Colors.black, onPressed: () {
           _validateAndSubmit();
@@ -183,13 +186,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _loginWithFacebook() async {
-    _facebookLogin.logInWithReadPermissions(['email', 'public_profile']).then(
-        (result) async {
+    _facebookLogin.logInWithReadPermissions(['email', 'public_profile']).then((result) async {
       final BaseAuth auth = AuthProvider.of(context).auth;
 
       switch (result.status) {
         case FacebookLoginStatus.loggedIn:
-          print('logInWithReadPermissions - loggedIn');
+          print('Signed in with Facebook - loggedIn');
           final String userId = await auth.signInWithCredential(
             authProviderType: AuthProviderType.facebook,
             accessToken: result.accessToken.token,
@@ -198,10 +200,10 @@ class _LoginPageState extends State<LoginPage> {
           print('Signed in with Facebook: $userId');
           break;
         case FacebookLoginStatus.cancelledByUser:
-          print('logInWithReadPermissions - cancelledByUser');
+          print('Signed in with Facebook - cancelledByUser');
           break;
         case FacebookLoginStatus.error:
-          print('logInWithReadPermissions - error');
+          print('Signed in with Facebook - error');
           break;
       }
     }).catchError((e) {
@@ -224,6 +226,33 @@ class _LoginPageState extends State<LoginPage> {
       }).catchError((e) {
         print(e);
       });
+    }).catchError((e) {
+      print(e);
+    });
+  }
+  
+  Future<void> _loginWithTwitter() async {
+    _twitterLogin.authorize().then((result) async {
+      final BaseAuth auth = AuthProvider.of(context).auth;
+
+      switch(result.status) {
+        case TwitterLoginStatus.loggedIn:
+          print('Signed in with Twitter - loggedIn');
+          final String userId = await auth.signInWithCredential(
+            authProviderType: AuthProviderType.twitter,
+            idToken: result.session.token,
+            accessToken: result.session.secret,
+          );
+          _onSignedIn();
+          print('Signed in with Twitter: $userId');
+          break;
+        case TwitterLoginStatus.cancelledByUser:
+          print('Signed in with Twitter - cancelledByUser');
+          break;
+        case TwitterLoginStatus.error:
+          print('Signed in with Twitter - error');
+          break;
+      }
     }).catchError((e) {
       print(e);
     });

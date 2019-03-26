@@ -37,7 +37,7 @@ class Auth implements BaseAuth {
         authCredential = GoogleAuthProvider.getCredential(idToken: idToken, accessToken: accessToken);
         break;
       case AuthProviderType.twitter:
-//        authCredential = TwitterAuthProvider.getCredential(authToken: null, authTokenSecret: null)
+        authCredential = TwitterAuthProvider.getCredential(authToken: idToken, authTokenSecret: accessToken);
         break;
       case AuthProviderType.github:
         authCredential = GithubAuthProvider.getCredential(token: accessToken);
