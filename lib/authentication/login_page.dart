@@ -3,7 +3,7 @@ import 'auth.dart';
 import 'auth_provider.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_twitter_login/flutter_twitter_login.dart';
+//import 'package:flutter_twitter_login/flutter_twitter_login.dart';
 
 enum FormType {
   login,
@@ -40,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
 
   FacebookLogin _facebookLogin;
   GoogleSignIn _googleSignIn;
-  TwitterLogin _twitterLogin;
+//  TwitterLogin _twitterLogin;
 
   @override
   void initState() {
@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
 
     _facebookLogin = FacebookLogin();
     _googleSignIn = GoogleSignIn();
-    _twitterLogin = TwitterLogin(consumerKey: 'yEOD8RE9uJvtcMRfvFtkYNtuE', consumerSecret: 'zn7FetFiDNv0lmA5gNd3mo4cwswsqDcPonT60tPA86nJTrfMDX');
+//    _twitterLogin = TwitterLogin(consumerKey: 'yEOD8RE9uJvtcMRfvFtkYNtuE', consumerSecret: 'zn7FetFiDNv0lmA5gNd3mo4cwswsqDcPonT60tPA86nJTrfMDX');
   }
 
   @override
@@ -128,13 +128,16 @@ class _LoginPageState extends State<LoginPage> {
         _raisedButton(key: Key('logInGoogle'), title: 'Login with Google', color: Color(0XFFBF4D3B), textColor: Colors.white, onPressed: () {
           _loginWithGoogle();
         }),
-        _raisedButton(key: Key('logInTwitter'), title: 'Login with Twitter', color: Color(0XFF6DA9EE), textColor: Colors.white, onPressed: () {
-          _loginWithTwitter();
-        }),
-        _raisedButton(key: Key('logInGithub'), title: 'Login with Github', color: Colors.white, textColor: Colors.black, onPressed: () {
-          _validateAndSubmit();
-        }),
+//        _raisedButton(key: Key('logInTwitter'), title: 'Login with Twitter', color: Color(0XFF6DA9EE), textColor: Colors.white, onPressed: () {
+//          _loginWithTwitter();
+//        }),
+//        _raisedButton(key: Key('logInGithub'), title: 'Login with Github', color: Colors.white, textColor: Colors.black, onPressed: () {
+//          _validateAndSubmit();
+//        }),
         _flatButton(key: Key('signUp'), title: 'Create an account', onPressed: () {
+          _moveToRegister();
+        }),
+        _flatButton(key: Key('signUpPhone'), title: 'Create an account with phone', onPressed: () {
           _moveToRegister();
         }),
       ];
@@ -231,32 +234,32 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
   
-  Future<void> _loginWithTwitter() async {
-    _twitterLogin.authorize().then((result) async {
-      final BaseAuth auth = AuthProvider.of(context).auth;
-
-      switch(result.status) {
-        case TwitterLoginStatus.loggedIn:
-          print('Signed in with Twitter - loggedIn');
-          final String userId = await auth.signInWithCredential(
-            authProviderType: AuthProviderType.twitter,
-            idToken: result.session.token,
-            accessToken: result.session.secret,
-          );
-          _onSignedIn();
-          print('Signed in with Twitter: $userId');
-          break;
-        case TwitterLoginStatus.cancelledByUser:
-          print('Signed in with Twitter - cancelledByUser');
-          break;
-        case TwitterLoginStatus.error:
-          print('Signed in with Twitter - error');
-          break;
-      }
-    }).catchError((e) {
-      print(e);
-    });
-  }
+//  Future<void> _loginWithTwitter() async {
+//    _twitterLogin.authorize().then((result) async {
+//      final BaseAuth auth = AuthProvider.of(context).auth;
+//
+//      switch(result.status) {
+//        case TwitterLoginStatus.loggedIn:
+//          print('Signed in with Twitter - loggedIn');
+//          final String userId = await auth.signInWithCredential(
+//            authProviderType: AuthProviderType.twitter,
+//            idToken: result.session.token,
+//            accessToken: result.session.secret,
+//          );
+//          _onSignedIn();
+//          print('Signed in with Twitter: $userId');
+//          break;
+//        case TwitterLoginStatus.cancelledByUser:
+//          print('Signed in with Twitter - cancelledByUser');
+//          break;
+//        case TwitterLoginStatus.error:
+//          print('Signed in with Twitter - error');
+//          break;
+//      }
+//    }).catchError((e) {
+//      print(e);
+//    });
+//  }
 
   void _moveToRegister() {
     _formKey.currentState.reset();
