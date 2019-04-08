@@ -7,7 +7,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 enum FormType {
   login,
-  register,
+  registerEmail,
+  registerPhone,
 }
 
 class EmailFieldValidator {
@@ -19,6 +20,12 @@ class EmailFieldValidator {
 class PasswordFieldValidator {
   static String validate(String value) {
     return value.isEmpty ? 'Password can\'t be empty' : null;
+  }
+}
+
+class PhoneFieldValidator {
+  static String validate(String value) {
+    return value.isEmpty ? 'Phone can\'t be empty' : null;
   }
 }
 
@@ -36,6 +43,10 @@ class _LoginPageState extends State<LoginPage> {
 
   String _email;
   String _password;
+  String _phoneNumber;
+  String _smsCode;
+  String _verificationId;
+
   FormType _formType = FormType.login;
 
   FacebookLogin _facebookLogin;
@@ -72,20 +83,33 @@ class _LoginPageState extends State<LoginPage> {
 
   // Private Widgets
   List<Widget> _buildInputs() {
-    return <Widget>[
-      TextFormField(
-        key: Key('email'),
-        decoration: InputDecoration(labelText: 'Email'),
-        validator: EmailFieldValidator.validate,
-        onSaved: (String value) => _email = value,
-      ),
-      TextFormField(
-        key: Key('password'),
-        decoration: InputDecoration(labelText: 'Password'),
-        validator: PasswordFieldValidator.validate,
-        onSaved: (String value) => _password = value,
-      ),
-    ];
+    if (_formType == FormType.registerPhone) {
+      return <Widget>[
+        TextFormField(
+          key: Key('phone'),
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(labelText: 'Phone'),
+          validator: PhoneFieldValidator.validate,
+          onSaved: (String value) => _phoneNumber = value,
+        ),
+      ];
+    } else {
+      return <Widget>[
+        TextFormField(
+          key: Key('email'),
+          decoration: InputDecoration(labelText: 'Email'),
+          validator: EmailFieldValidator.validate,
+          onSaved: (String value) => _email = value,
+        ),
+        TextFormField(
+          key: Key('password'),
+          obscureText: true,
+          decoration: InputDecoration(labelText: 'Password'),
+          validator: PasswordFieldValidator.validate,
+          onSaved: (String value) => _password = value,
+        ),
+      ];
+    }
   }
 
   Widget _raisedButton({@required Key key, @required String title, @required VoidCallback onPressed, Color color, Color textColor}) {
@@ -135,10 +159,10 @@ class _LoginPageState extends State<LoginPage> {
 //          _validateAndSubmit();
 //        }),
         _flatButton(key: Key('signUp'), title: 'Create an account', onPressed: () {
-          _moveToRegister();
+          _moveToRegisterWithEmail();
         }),
         _flatButton(key: Key('signUpPhone'), title: 'Create an account with phone', onPressed: () {
-          _moveToRegister();
+          _moveToRegisterWithPhone();
         }),
       ];
     } else {
@@ -174,12 +198,16 @@ class _LoginPageState extends State<LoginPage> {
             _password,
           );
           print('Signed in: $userId');
-        } else {
+        } else if (_formType == FormType.registerEmail) {
           final String userId = await auth.createUserWithEmailAndPassword(
             _email,
             _password,
           );
-          print('Registered user: $userId');
+          print('Registered with email: $userId');
+        } else {
+          final String _verificationId = await auth.verifyPhoneNumber(_phoneNumber);
+          print('_verificationId $_verificationId');
+//          print('Registered with phone: $userId');
         }
         _onSignedIn();
       } catch (e) {
@@ -261,11 +289,19 @@ class _LoginPageState extends State<LoginPage> {
 //    });
 //  }
 
-  void _moveToRegister() {
+  void _moveToRegisterWithEmail() {
     _formKey.currentState.reset();
 
     setState(() {
-      _formType = FormType.register;
+      _formType = FormType.registerEmail;
+    });
+  }
+
+  void _moveToRegisterWithPhone() {
+    _formKey.currentState.reset();
+
+    setState(() {
+      _formType = FormType.registerPhone;
     });
   }
 

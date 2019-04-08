@@ -6,11 +6,13 @@ enum AuthProviderType {
   google,
   twitter,
   github,
+  phone,
 }
 
 abstract class BaseAuth {
   Future<String> signInWithEmailAndPassword(String email, String password);
   Future<String> createUserWithEmailAndPassword(String email, String password);
+  Future<String> verifyPhoneNumber(String phoneNumber);
   Future<String> signInWithCredential({AuthProviderType authProviderType, String idToken, String accessToken});
   Future<String> currentUser();
   Future<void> signOut();
@@ -42,6 +44,9 @@ class Auth implements BaseAuth {
       case AuthProviderType.github:
         authCredential = GithubAuthProvider.getCredential(token: accessToken);
         break;
+      case AuthProviderType.phone:
+        authCredential = PhoneAuthProvider.getCredential(verificationId: idToken, smsCode: accessToken);
+        break;
     }
 
     final FirebaseUser user = await _firebaseAuth.signInWithCredential(authCredential);
@@ -52,6 +57,31 @@ class Auth implements BaseAuth {
   Future<String> createUserWithEmailAndPassword(String email, String password) async {
     final FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
     return user?.uid;
+  }
+
+  @override
+  Future<String> verifyPhoneNumber(String phoneNumber) async {
+    String _verificationId;
+    final PhoneCodeAutoRetrievalTimeout autoRetrievalTimeout = (String verificationId) {
+      _verificationId = verificationId;
+    };
+
+    final PhoneCodeSent phoneCodeSent = (String verificationId, [int forceResendingToken]) {
+      _verificationId = verificationId;
+    };
+
+    final PhoneVerificationCompleted phoneVerificationCompleted = (FirebaseUser firebaseUser) {
+      print('verifyPhoneNumber - completed');
+    };
+
+    final PhoneVerificationFailed phoneVerificationFailed = (AuthException error) {
+      print('verifyPhoneNumber - failed');
+      print('${error.message}');
+    };
+
+    await _firebaseAuth.verifyPhoneNumber(phoneNumber: phoneNumber, timeout: const Duration(seconds: 5), verificationCompleted: phoneVerificationCompleted, verificationFailed: phoneVerificationFailed, codeSent: phoneCodeSent, codeAutoRetrievalTimeout: autoRetrievalTimeout);
+
+    return _verificationId;
   }
 
   @override
