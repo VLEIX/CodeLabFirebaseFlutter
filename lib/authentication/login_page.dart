@@ -4,6 +4,7 @@ import 'auth_provider.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 //import 'package:flutter_twitter_login/flutter_twitter_login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 enum FormType {
   login,
@@ -87,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
       return <Widget>[
         TextFormField(
           key: Key('phone'),
-          keyboardType: TextInputType.number,
+          keyboardType: TextInputType.phone,
           decoration: InputDecoration(labelText: 'Phone'),
           validator: PhoneFieldValidator.validate,
           onSaved: (String value) => _phoneNumber = value,
@@ -198,18 +199,39 @@ class _LoginPageState extends State<LoginPage> {
             _password,
           );
           print('Signed in: $userId');
+          _onSignedIn();
         } else if (_formType == FormType.registerEmail) {
           final String userId = await auth.createUserWithEmailAndPassword(
             _email,
             _password,
           );
           print('Registered with email: $userId');
+          _onSignedIn();
         } else {
-          final String _verificationId = await auth.verifyPhoneNumber(_phoneNumber);
-          print('_verificationId $_verificationId');
+          String _verificationId;
+          final PhoneCodeAutoRetrievalTimeout autoRetrievalTimeout = (String verificationId) {
+            _verificationId = verificationId;
+            print('verifyPhoneNumber $_verificationId');
+          };
+
+          final PhoneCodeSent phoneCodeSent = (String verificationId, [int forceResendingToken]) {
+            _verificationId = verificationId;
+            print('verifyPhoneNumber $_verificationId');
+          };
+
+          final PhoneVerificationCompleted phoneVerificationCompleted = (FirebaseUser firebaseUser) {
+            print('verifyPhoneNumber - completed');
+          };
+
+          final PhoneVerificationFailed phoneVerificationFailed = (AuthException error) {
+            print('verifyPhoneNumber - failed');
+            print('${error.message}');
+          };
+
+          await auth.verifyPhoneNumber(_phoneNumber, autoRetrievalTimeout, phoneCodeSent, phoneVerificationCompleted, phoneVerificationFailed);
+
 //          print('Registered with phone: $userId');
         }
-        _onSignedIn();
       } catch (e) {
         print('Error: $e');
       }

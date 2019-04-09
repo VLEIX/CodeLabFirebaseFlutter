@@ -12,7 +12,7 @@ enum AuthProviderType {
 abstract class BaseAuth {
   Future<String> signInWithEmailAndPassword(String email, String password);
   Future<String> createUserWithEmailAndPassword(String email, String password);
-  Future<String> verifyPhoneNumber(String phoneNumber);
+  Future<void> verifyPhoneNumber(String phoneNumber, PhoneCodeAutoRetrievalTimeout autoRetrievalTimeout, PhoneCodeSent phoneCodeSent, PhoneVerificationCompleted phoneVerificationCompleted, PhoneVerificationFailed phoneVerificationFailed);
   Future<String> signInWithCredential({AuthProviderType authProviderType, String idToken, String accessToken});
   Future<String> currentUser();
   Future<void> signOut();
@@ -60,28 +60,8 @@ class Auth implements BaseAuth {
   }
 
   @override
-  Future<String> verifyPhoneNumber(String phoneNumber) async {
-    String _verificationId;
-    final PhoneCodeAutoRetrievalTimeout autoRetrievalTimeout = (String verificationId) {
-      _verificationId = verificationId;
-    };
-
-    final PhoneCodeSent phoneCodeSent = (String verificationId, [int forceResendingToken]) {
-      _verificationId = verificationId;
-    };
-
-    final PhoneVerificationCompleted phoneVerificationCompleted = (FirebaseUser firebaseUser) {
-      print('verifyPhoneNumber - completed');
-    };
-
-    final PhoneVerificationFailed phoneVerificationFailed = (AuthException error) {
-      print('verifyPhoneNumber - failed');
-      print('${error.message}');
-    };
-
+  Future<void> verifyPhoneNumber(String phoneNumber, PhoneCodeAutoRetrievalTimeout autoRetrievalTimeout, PhoneCodeSent phoneCodeSent, PhoneVerificationCompleted phoneVerificationCompleted, PhoneVerificationFailed phoneVerificationFailed) async {
     await _firebaseAuth.verifyPhoneNumber(phoneNumber: phoneNumber, timeout: const Duration(seconds: 5), verificationCompleted: phoneVerificationCompleted, verificationFailed: phoneVerificationFailed, codeSent: phoneCodeSent, codeAutoRetrievalTimeout: autoRetrievalTimeout);
-
-    return _verificationId;
   }
 
   @override
