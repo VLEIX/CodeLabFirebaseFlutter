@@ -208,34 +208,61 @@ class _LoginPageState extends State<LoginPage> {
           print('Registered with email: $userId');
           _onSignedIn();
         } else {
-          String _verificationId;
+          _verificationId;
           final PhoneCodeAutoRetrievalTimeout autoRetrievalTimeout = (String verificationId) {
             _verificationId = verificationId;
-            print('verifyPhoneNumber $_verificationId');
+            print('verifyPhoneNumber - PhoneCodeAutoRetrievalTimeout with verificationId: $_verificationId');
           };
 
           final PhoneCodeSent phoneCodeSent = (String verificationId, [int forceResendingToken]) {
             _verificationId = verificationId;
-            print('verifyPhoneNumber $_verificationId');
+            print('verifyPhoneNumber - PhoneCodeSent with verificationId: $_verificationId');
+            _smsCodeDialog();
           };
 
           final PhoneVerificationCompleted phoneVerificationCompleted = (FirebaseUser firebaseUser) {
-            print('verifyPhoneNumber - completed');
+            print('verifyPhoneNumber - PhoneVerificationCompleted');
           };
 
           final PhoneVerificationFailed phoneVerificationFailed = (AuthException error) {
-            print('verifyPhoneNumber - failed');
+            print('verifyPhoneNumber - PhoneVerificationFailed');
             print('${error.message}');
           };
 
           await auth.verifyPhoneNumber(_phoneNumber, autoRetrievalTimeout, phoneCodeSent, phoneVerificationCompleted, phoneVerificationFailed);
-
-//          print('Registered with phone: $userId');
         }
       } catch (e) {
         print('Error: $e');
       }
     }
+  }
+
+  Future<bool> _smsCodeDialog() {
+    return showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Enter SMS code'),
+          content: TextField(
+            keyboardType: TextInputType.number,
+            onChanged: (value) {
+              _smsCode = value;
+            },
+          ),
+          contentPadding: EdgeInsets.all(10.0),
+          actions: <Widget>[
+            new FlatButton(
+              child: Text('Done'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _loginWithPhoneNumber();
+              },
+            ),
+          ],
+        );
+      }
+    );
   }
 
   Future<void> _loginWithFacebook() async {
@@ -310,6 +337,18 @@ class _LoginPageState extends State<LoginPage> {
 //      print(e);
 //    });
 //  }
+
+  Future<void> _loginWithPhoneNumber() async {
+    final BaseAuth auth = AuthProvider.of(context).auth;
+
+    final String userId = await auth.signInWithCredential(
+      authProviderType: AuthProviderType.phone,
+      idToken: _verificationId,
+      accessToken: _smsCode,
+    );
+    _onSignedIn();
+    print('Registered with phone: $userId');
+  }
 
   void _moveToRegisterWithEmail() {
     _formKey.currentState.reset();
