@@ -52,7 +52,9 @@ class _LoginPageState extends State<LoginPage> {
 
   FacebookLogin _facebookLogin;
   GoogleSignIn _googleSignIn;
-//  TwitterLogin _twitterLogin;
+//  TwitterLogin _twitterLogin
+
+  TextEditingController _txtPhoneController;
 
   @override
   void initState() {
@@ -61,6 +63,16 @@ class _LoginPageState extends State<LoginPage> {
     _facebookLogin = FacebookLogin();
     _googleSignIn = GoogleSignIn();
 //    _twitterLogin = TwitterLogin(consumerKey: 'yEOD8RE9uJvtcMRfvFtkYNtuE', consumerSecret: 'zn7FetFiDNv0lmA5gNd3mo4cwswsqDcPonT60tPA86nJTrfMDX');
+
+    _txtPhoneController = new TextEditingController();
+    _txtPhoneController.text = '+51';
+  }
+
+  @override
+  void dispose() {
+    _txtPhoneController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -88,6 +100,7 @@ class _LoginPageState extends State<LoginPage> {
       return <Widget>[
         TextFormField(
           key: Key('phone'),
+          controller: _txtPhoneController,
           keyboardType: TextInputType.phone,
           decoration: InputDecoration(labelText: 'Phone'),
           validator: PhoneFieldValidator.validate,
@@ -208,7 +221,6 @@ class _LoginPageState extends State<LoginPage> {
           print('Registered with email: $userId');
           _onSignedIn();
         } else {
-          _verificationId;
           final PhoneCodeAutoRetrievalTimeout autoRetrievalTimeout = (String verificationId) {
             _verificationId = verificationId;
             print('verifyPhoneNumber - PhoneCodeAutoRetrievalTimeout with verificationId: $_verificationId');
