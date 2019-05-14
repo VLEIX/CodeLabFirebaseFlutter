@@ -207,19 +207,27 @@ class _LoginPageState extends State<LoginPage> {
       final BaseAuth auth = AuthProvider.of(context).auth;
       try {
         if (_formType == FormType.login) {
-          final String userId = await auth.signInWithEmailAndPassword(
+          await auth.signInWithEmailAndPassword(
             _email,
             _password,
-          );
-          print('Signed in: $userId');
-          _onSignedIn();
+          ).then((String userId) {
+            auth.isEmailVerified().then((bool isEmailVerified) {
+              if (!isEmailVerified) {
+                _showSimpleDialog('Verify your account', 'Link to verify account has been sent to your email');
+              } else {
+                print('Signed in: $userId');
+                _onSignedIn();
+              }
+            });
+          });
         } else if (_formType == FormType.registerEmail) {
           final String userId = await auth.createUserWithEmailAndPassword(
             _email,
             _password,
           );
           print('Registered with email: $userId');
-          _onSignedIn();
+          _moveToLogin();
+          _showSimpleDialog('Verify your account', 'Link to verify account has been sent to your email');
         } else {
           final PhoneCodeAutoRetrievalTimeout autoRetrievalTimeout = (String verificationId) {
             _verificationId = verificationId;
@@ -247,6 +255,26 @@ class _LoginPageState extends State<LoginPage> {
         print('Error: $e');
       }
     }
+  }
+
+  void _showSimpleDialog(String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text(title),
+          content: new Text(content),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<bool> _smsCodeDialog() {

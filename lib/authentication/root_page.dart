@@ -25,9 +25,22 @@ class _RootPageState extends State<RootPage> {
     final BaseAuth auth = AuthProvider.of(context).auth;
     auth.currentUser().then((String userId) {
       setState(() {
-        authUserStatus = userId == null
-            ? AuthUserStatus.notSignedIn
-            : AuthUserStatus.signedIn;
+        if (userId == null) {
+          authUserStatus = AuthUserStatus.notSignedIn;
+          //TODO: show error
+          print('userId: $userId');
+        } else {
+          auth.isEmailVerified().then((bool isEmailVerified) {
+            if (!isEmailVerified) {
+              authUserStatus = AuthUserStatus.notSignedIn;
+              //TODO: show error isEmailVerified
+              //check if this is necessary
+              print('isEmailVerified: $isEmailVerified');
+            } else {
+              authUserStatus = AuthUserStatus.signedIn;
+            }
+          });
+        }
       });
     });
   }

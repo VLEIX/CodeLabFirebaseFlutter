@@ -15,6 +15,7 @@ abstract class BaseAuth {
   Future<void> verifyPhoneNumber(String phoneNumber, PhoneCodeAutoRetrievalTimeout autoRetrievalTimeout, PhoneCodeSent phoneCodeSent, PhoneVerificationCompleted phoneVerificationCompleted, PhoneVerificationFailed phoneVerificationFailed);
   Future<String> signInWithCredential({AuthProviderType authProviderType, String idToken, String accessToken});
   Future<String> currentUser();
+  Future<bool> isEmailVerified();
   Future<void> signOut();
 }
 
@@ -56,6 +57,7 @@ class Auth implements BaseAuth {
   @override
   Future<String> createUserWithEmailAndPassword(String email, String password) async {
     final FirebaseUser user = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password);
+    user.sendEmailVerification();
     return user?.uid;
   }
 
@@ -68,6 +70,12 @@ class Auth implements BaseAuth {
   Future<String> currentUser() async {
     final FirebaseUser user = await _firebaseAuth.currentUser();
     return user?.uid;
+  }
+
+  @override
+  Future<bool> isEmailVerified() async {
+    final FirebaseUser user = await _firebaseAuth.currentUser();
+    return user.isEmailVerified;
   }
 
   @override
