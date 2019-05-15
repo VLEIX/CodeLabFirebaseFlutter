@@ -211,6 +211,8 @@ class _LoginPageState extends State<LoginPage> {
             _email,
             _password,
           ).then((String userId) {
+            print('Signed in: $userId');
+
             auth.isEmailVerified().then((bool isEmailVerified) {
               if (!isEmailVerified) {
                 _showSimpleDialog('Verify your account', 'Link to verify account has been sent to your email');
@@ -253,6 +255,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       } catch (e) {
         print('Error: $e');
+        _showSimpleDialog('Error', e.message);
       }
     }
   }

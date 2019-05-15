@@ -27,18 +27,11 @@ class _RootPageState extends State<RootPage> {
       setState(() {
         if (userId == null) {
           authUserStatus = AuthUserStatus.notSignedIn;
-          //TODO: show error
-          print('userId: $userId');
         } else {
           auth.isEmailVerified().then((bool isEmailVerified) {
-            if (!isEmailVerified) {
-              authUserStatus = AuthUserStatus.notSignedIn;
-              //TODO: show error isEmailVerified
-              //check if this is necessary
-              print('isEmailVerified: $isEmailVerified');
-            } else {
-              authUserStatus = AuthUserStatus.signedIn;
-            }
+            authUserStatus = isEmailVerified == false
+                ? AuthUserStatus.notSignedIn
+                : AuthUserStatus.signedIn;
           });
         }
       });
