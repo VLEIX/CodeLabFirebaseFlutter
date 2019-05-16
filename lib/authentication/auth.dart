@@ -9,6 +9,8 @@ enum AuthProviderType {
   phone,
 }
 
+const String kProviderPassword = 'password';
+
 abstract class BaseAuth {
   Future<String> signInWithEmailAndPassword(String email, String password);
   Future<String> createUserWithEmailAndPassword(String email, String password);
@@ -75,7 +77,10 @@ class Auth implements BaseAuth {
   @override
   Future<bool> isEmailVerified() async {
     final FirebaseUser user = await _firebaseAuth.currentUser();
-    return user.isEmailVerified;
+
+    return (user.providerData[0].providerId == kProviderPassword)
+        ? user.isEmailVerified
+        : true;
   }
 
   @override

@@ -19,11 +19,11 @@ class _RootPageState extends State<RootPage> {
   AuthUserStatus authUserStatus = AuthUserStatus.notDetermined;
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
 
     final BaseAuth auth = AuthProvider.of(context).auth;
-    auth.currentUser().then((String userId) {
+    await auth.currentUser().then((String userId) {
       setState(() {
         if (userId == null) {
           authUserStatus = AuthUserStatus.notSignedIn;
