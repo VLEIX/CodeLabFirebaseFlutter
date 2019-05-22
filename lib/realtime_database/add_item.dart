@@ -18,7 +18,7 @@ class _AddItemState extends State<AddItem> {
         appBar: AppBar(
           title: Text('Add Item'),
           actions: <Widget>[
-            IconButton(icon: const Icon(Icons.done), onPressed: _pushDone),
+            IconButton(icon: const Icon(Icons.done), onPressed: _doneAction),
           ],
         ),
         body: Container(
@@ -59,9 +59,9 @@ class _AddItemState extends State<AddItem> {
     return false;
   }
 
-  _pushDone() {
+  _doneAction() {
     if (_validateAndSave()) {
-      Item item = Item(_title, _body);
+      Item item = Item(_title, _body, "");
       Navigator.pop(context, item);
     }
   }

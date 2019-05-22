@@ -4,18 +4,21 @@ class Item {
   String key;
   String title;
   String body;
+  String userId;
 
-  Item(this.title, this.body);
+  Item(this.title, this.body, this.userId);
 
   Item.fromSnapshot(DataSnapshot snapshot)
       : key = snapshot.key,
         title = snapshot.value['title'],
-        body = snapshot.value['body'];
+        body = snapshot.value['body'],
+        userId = snapshot.value['userId'];
 
   toJson() {
     return {
       "title": title,
       "body": body,
+      "userId": userId,
     };
   }
 }

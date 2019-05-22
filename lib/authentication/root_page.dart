@@ -16,6 +16,8 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+
+  String userId;
   AuthUserStatus authUserStatus = AuthUserStatus.notDetermined;
 
   @override
@@ -28,6 +30,7 @@ class _RootPageState extends State<RootPage> {
         if (userId == null) {
           authUserStatus = AuthUserStatus.notSignedIn;
         } else {
+          this.userId = userId;
           auth.isEmailVerified().then((bool isEmailVerified) {
             authUserStatus = isEmailVerified == false
                 ? AuthUserStatus.notSignedIn
@@ -48,9 +51,7 @@ class _RootPageState extends State<RootPage> {
           onSignedIn: _signedIn,
         );
       case AuthUserStatus.signedIn:
-        return HomePage(
-          onSignedOut: _signedOut,
-        );
+        return HomePage(_signedOut, userId);
     }
     return null;
   }

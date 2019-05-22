@@ -6,6 +6,11 @@ import 'add_item.dart';
 import 'dart:async';
 
 class ListItems extends StatefulWidget {
+  final VoidCallback onSignedOut;
+  final String userId;
+
+  ListItems(this.onSignedOut, this.userId);
+
   @override
   _ListItemsState createState() => _ListItemsState();
 }
@@ -47,6 +52,18 @@ class _ListItemsState extends State<ListItems> {
     return Scaffold(
       appBar: AppBar(
         title: Text('List Items'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'Logout',
+                style: TextStyle(
+                  fontSize: 17.0,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () => widget.onSignedOut(),
+            ),
+          ]
       ),
       resizeToAvoidBottomPadding: false,
       body: Column(
