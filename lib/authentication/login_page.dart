@@ -147,6 +147,7 @@ class _LoginPageState extends State<LoginPage> {
       return <Widget>[
         TextFormField(
           key: Key('email'),
+          autocorrect: false,
           decoration: InputDecoration(labelText: 'Email'),
           validator: EmailFieldValidator.validate,
           onSaved: (String value) => _email = value,

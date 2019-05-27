@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'item.dart';
 
 class AddItem extends StatefulWidget {
+  final String _userId;
+
+  AddItem(this._userId);
+
   @override
   _AddItemState createState() => _AddItemState();
 }
@@ -61,7 +65,7 @@ class _AddItemState extends State<AddItem> {
 
   _doneAction() {
     if (_validateAndSave()) {
-      Item item = Item(_title, _body, "");
+      Item item = Item(_title, _body);
       Navigator.pop(context, item);
     }
   }

@@ -3,7 +3,6 @@ import 'cloud_firestone/survey_baby_name_page.dart';
 import 'authentication/auth_provider.dart';
 import 'authentication/auth.dart';
 import 'authentication/root_page.dart';
-import 'realtime_database/list_items.dart';
 
 void main() => runApp(MyApp());
 
