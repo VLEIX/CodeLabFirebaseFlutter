@@ -95,27 +95,36 @@ class _ListItemsState extends State<ListItems> {
           Item item = Item.fromSnapshot(snapshot);
           return Dismissible(
             key: Key(item.key),
-            onDismissed: (direction) async {
-              _deleteItem(item);
-////              setState(() {
-//                _itemsDBReference.child(_items[index].key).remove().then((_) {
-////                  print('temsDBReference.child(_items[in');
-//                  setState(() {
-//                    _items.removeAt(index);
-//                  });
-//                });
-////              });
-////
-////              String _textToSnackBar;
-////              if (direction == DismissDirection.endToStart) {
-////                _textToSnackBar = 'dismissed';
-////              } else if (direction == DismissDirection.startToEnd) {
-////                _textToSnackBar = 'saved';
-////              }
-////
-////              Scaffold.of(context).showSnackBar(
-////                  SnackBar(content: Text('$item $_textToSnackBar')));
+            confirmDismiss: (direction) async {
+              if (direction == DismissDirection.startToEnd) {
+                /// edit item
+                return false;
+              } else if (direction == DismissDirection.endToStart) {
+                /// delete
+                return true;
+              }
             },
+//            onDismissed: (direction) async {
+//              await _deleteItem(item);
+//////              setState(() {
+////                _itemsDBReference.child(_items[index].key).remove().then((_) {
+//////                  print('temsDBReference.child(_items[in');
+////                  setState(() {
+////                    _items.removeAt(index);
+////                  });
+////                });
+//////              });
+//////
+//////              String _textToSnackBar;
+//////              if (direction == DismissDirection.endToStart) {
+//////                _textToSnackBar = 'dismissed';
+//////              } else if (direction == DismissDirection.startToEnd) {
+//////                _textToSnackBar = 'saved';
+//////              }
+//////
+//////              Scaffold.of(context).showSnackBar(
+//////                  SnackBar(content: Text('$item $_textToSnackBar')));
+//            },
             background: Container(
               color: Colors.red,
             ),
@@ -136,7 +145,7 @@ class _ListItemsState extends State<ListItems> {
     if (result != null) {
       Item item = result;
 
-      _addItem(item);
+      await _addItem(item);
     }
   }
 
@@ -148,7 +157,7 @@ class _ListItemsState extends State<ListItems> {
 
   _deleteItem(Item item) async {
 //    setState(() {
-//      _itemUtil.deleteItem(item);
+    _itemUtil.deleteItem(item);
 //    });
   }
 
