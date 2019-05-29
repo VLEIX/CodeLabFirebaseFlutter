@@ -4,14 +4,8 @@ import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'item.dart';
 import 'add_item.dart';
 import 'item_util.dart';
-import 'dart:async';
 
 class ListItems extends StatefulWidget {
-  final VoidCallback onSignedOut;
-  final String _userId;
-
-  ListItems(this.onSignedOut, this._userId);
-
   @override
   _ListItemsState createState() => _ListItemsState();
 }
@@ -19,55 +13,18 @@ class ListItems extends StatefulWidget {
 class _ListItemsState extends State<ListItems> {
   ItemUtil _itemUtil;
 
-//  List<Item> _items = List();
-//
-//  DatabaseReference _itemsDBReference;
-//  StreamSubscription<Event> _onItemsAddedSubscription;
-//  StreamSubscription<Event> _onItemsChangedSubscription;
-//  StreamSubscription<Event> _onItemsRemovedSubscription;
-
   @override
   void initState() {
     super.initState();
 
     _itemUtil = ItemUtil();
     _itemUtil.initState();
-
-//    final FirebaseDatabase database = FirebaseDatabase.instance;
-//    database.setPersistenceEnabled(true);
-//    database.setPersistenceCacheSizeBytes(10000000); // 10MB
-//
-//    _itemsDBReference = database.reference().child('items').orderByChild('userId').equalTo(widget._userId);
-//    _itemsDBReference.keepSynced(true);
-//
-//    _onItemsAddedSubscription = _itemsDBReference.onChildAdded.listen(_onEntryAdded);
-//    _onItemsChangedSubscription = _itemsDBReference.onChildChanged.listen(_onEntryChanged);
-//    _onItemsRemovedSubscription = _itemsDBReference.onChildRemoved.listen(_onEntryRemoved);
-  }
-
-  @override
-  void dispose() {
-//    _onItemsAddedSubscription.cancel();
-//    _onItemsChangedSubscription.cancel();
-//    _onItemsRemovedSubscription.cancel();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('List Items'), actions: <Widget>[
-        FlatButton(
-          child: Text(
-            'Logout',
-            style: TextStyle(
-              fontSize: 17.0,
-              color: Colors.white,
-            ),
-          ),
-          onPressed: () => widget.onSignedOut(),
-        ),
-      ]),
+      appBar: AppBar(title: Text('List items')),
       resizeToAvoidBottomPadding: false,
       body: Column(
         children: <Widget>[
@@ -97,36 +54,29 @@ class _ListItemsState extends State<ListItems> {
             key: Key(item.key),
             confirmDismiss: (direction) async {
               if (direction == DismissDirection.startToEnd) {
-                /// edit item
-                return false;
+                _navigateToEditItem(item);
               } else if (direction == DismissDirection.endToStart) {
-                /// delete
-                return true;
+                _showDeleteConfirmationDialog(item);
               }
+              return false;
             },
-//            onDismissed: (direction) async {
-//              await _deleteItem(item);
-//////              setState(() {
-////                _itemsDBReference.child(_items[index].key).remove().then((_) {
-//////                  print('temsDBReference.child(_items[in');
-////                  setState(() {
-////                    _items.removeAt(index);
-////                  });
-////                });
-//////              });
-//////
-//////              String _textToSnackBar;
-//////              if (direction == DismissDirection.endToStart) {
-//////                _textToSnackBar = 'dismissed';
-//////              } else if (direction == DismissDirection.startToEnd) {
-//////                _textToSnackBar = 'saved';
-//////              }
-//////
-//////              Scaffold.of(context).showSnackBar(
-//////                  SnackBar(content: Text('$item $_textToSnackBar')));
-//            },
             background: Container(
+              padding: const EdgeInsets.only(left: 16.0),
+              alignment: Alignment.centerLeft,
+              color: Colors.amber,
+              child: IconTheme(
+                data: IconThemeData(color: Colors.white),
+                child: Icon(Icons.edit),
+              ),
+            ),
+            secondaryBackground: Container(
+              padding: const EdgeInsets.only(right: 16.0),
+              alignment: Alignment.centerRight,
               color: Colors.red,
+              child: IconTheme(
+                data: IconThemeData(color: Colors.white),
+                child: Icon(Icons.delete),
+              ),
             ),
             child: ListTile(
               leading: Icon(Icons.message),
@@ -139,13 +89,24 @@ class _ListItemsState extends State<ListItems> {
 
   // Private Methods
   _navigateToAddItem() async {
-    final result = await Navigator.push(context,
-        MaterialPageRoute(builder: (context) => AddItem(widget._userId)));
+    final result = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => AddItem()));
 
     if (result != null) {
       Item item = result;
 
       await _addItem(item);
+    }
+  }
+
+  _navigateToEditItem(Item item) async {
+    final result = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => AddItem(itemReceived: item)));
+
+    if (result != null) {
+      Item item = result;
+
+      await _updateItem(item);
     }
   }
 
@@ -155,40 +116,42 @@ class _ListItemsState extends State<ListItems> {
     });
   }
 
-  _deleteItem(Item item) async {
-//    setState(() {
-    _itemUtil.deleteItem(item);
-//    });
+  _updateItem(Item item) async {
+    setState(() {
+      _itemUtil.updateItem(item);
+    });
   }
 
-//
-//  _onEntryAdded(Event event) {
-//    if (!mounted) return;
-//    setState(() {
-//      _items.add(Item.fromSnapshot(event.snapshot));
-//    });
-//  }
-//
-//  _onEntryChanged(Event event) {
-//    var old = _items.singleWhere((entry) {
-//      return entry.key == event.snapshot.key;
-//    });
-//
-//    if (!mounted) return;
-//    setState(() {
-//      _items[_items.indexOf(old)] = Item.fromSnapshot(event.snapshot);
-//    });
-//  }
-//
-//  _onEntryRemoved(Event event) {
-//    print('_onEntryRemoved');
-//
-////    var old = _items.singleWhere((entry) {
-////      return entry.key == event.snapshot.key;
-////    });
-//
-////    setState(() {
-////      _items.remove(event);
-////    });
-//  }
+  _deleteItem(Item item) async {
+    setState(() {
+      _itemUtil.deleteItem(item);
+    });
+  }
+
+  _showDeleteConfirmationDialog(Item item) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: new Text('Delete item'),
+          content: new Text('Are you sure to delete the item ${item.title}?'),
+          actions: <Widget>[
+            FlatButton(
+              child: new Text("NO"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: new Text("YES"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteItem(item);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

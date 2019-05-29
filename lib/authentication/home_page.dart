@@ -1,53 +1,49 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'auth.dart';
 import 'auth_provider.dart';
-import 'package:codelabs_firebase_flutter/realtime_database/list_items.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   final VoidCallback onSignedOut;
 
-  HomePage({this.onSignedOut});
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  String _userId;
-
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-
-    final BaseAuth auth = AuthProvider.of(context).auth;
-    await auth.currentUser().then((String userId) {
-      setState(() {
-        _userId = userId;
-      });
-    });
-  }
+  const HomePage({this.onSignedOut});
 
   @override
   Widget build(BuildContext context) {
-    return _userId != null ? ListItems(_signOut, _userId) : _buildWaitingScreen();
-  }
-
-  // Private Methods
-  Widget _buildWaitingScreen() {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Welcome'),
+        actions: <Widget>[
+          FlatButton(
+            child: Text(
+              'Logout',
+              style: TextStyle(
+                fontSize: 17.0,
+                color: Colors.white,
+              ),
+            ),
+            onPressed: () => _signOut(context),
+          ),
+        ],
+      ),
       body: Container(
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
+        child: Center(
+          child: Text(
+            'Welcome',
+            style: TextStyle(fontSize: 32.0),
+          ),
+        ),
       ),
     );
   }
 
-  Future<void> _signOut() async {
+  // Private Methods
+  Future<void> _signOut(BuildContext context) async {
     try {
       final BaseAuth auth = AuthProvider.of(context).auth;
       await auth.signOut();
 
-      widget.onSignedOut(); // // callback to launch the new screen
+      onSignedOut(); // // callback to launch the new screen
     } catch (e) {
       print(e);
     }

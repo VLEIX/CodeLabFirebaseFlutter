@@ -55,7 +55,6 @@ class _LoginPageState extends State<LoginPage> {
 
   FacebookLogin _facebookLogin;
   GoogleSignIn _googleSignIn;
-
 //  TwitterLogin _twitterLogin
 
   TextEditingController _txtPhoneController;
